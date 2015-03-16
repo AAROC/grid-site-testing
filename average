@@ -1,0 +1,84 @@
+#!/bin/bash
+# Name : average
+# Author : Bruce Becker | bbecker@csir.co.za
+# Descriptno : 
+# this script takes as input the times extracted from a parametric 
+# job storm to calculate the average and std devation of jobs run at a site
+
+# changelog
+# 11-02-2011 : Adding the output command first, so that we just run this script
+#              over a list of jobids. This will allow us to automate it.
+#              However, still need an easy way of flagging which jobs have been 
+#              retrieved
+
+# get the status of the job
+
+#note : the input has to be extracted from the glite-wms-job-status command
+
+# first need to get a valid proxy from myproxy
+myproxy-init -s myproxy.ct.infn.it -d -n 
+voms-proxy-init --voms sagrid --noregen
+
+# now, get the output
+# this is done for a particular run, so we need to loop through the jobs in the run
+JOBS=`grep -v "###Submitted Job Ids###" $1`
+
+for job in $JOBS ; do 
+	glite-wms-joboutput $job
+done	
+
+if [ $# == 0 ] ; then
+	echo "you need to provide the output directory as an argument"
+	echo "Maybe you meant one of the following recently obtained output sandboxes :"
+# we need to find the directories in /tmp that start with the username and are less than a day old
+	pattern="$USER"
+	find /tmp -maxdepth 1 -type d -mmin -2880 -name "$pattern*"
+	echo "exiting..."
+	exit 1;
+fi
+
+outputdir=$1
+njobs=`find $outputdir -name "Node*" | wc -l`
+cd $outputdir
+find . -name "std*.out" -exec grep "The test took" '{}' \; | awk '{print$ 4}' > times
+input=times
+average=0
+current=0
+sum=0
+nentries=`wc -l $input | awk '{print $1}'`
+#sigma=`cat $input`
+#first calculate the average
+echo "number of entries is : $nentries"
+for entry in `cat $input` ; do
+#	echo "entry nentries"
+	let current=$entry
+#	echo "current is $current"
+	let sum=$sum+$current
+#	echo "sum is $sum"
+
+#	let nentries=$nentries+1
+done
+let average=$sum/$nentries
+jobfail=`echo "(($njobs.-$nentries)/$njobs.)*100." | bc -l` 
+#now calculate the std deviation
+diff_i=0
+diffsum=0
+for i in `cat $input` ; do 
+	let diff_i=$i-$average
+	let diff_i=$diff_i*$diff_i
+	let diffsum=$diffsum+$diff_i
+done 
+let std_dev=$diffsum/$nentries
+echo "variance is $std_dev"
+let std_dev=`echo "sqrt($std_dev)" | bc	`
+echo "average = $average"
+echo "standard deviation is $std_dev"
+echo ""
+echo ""
+echo "$jobfail \% of jobs failed"
+average_minutes=`echo "$average / 60" |bc`
+echo "Jobs ran for $average_minutes m +\- $std_dev s"
+
+
+# remove the job from the list 
+# TODO 

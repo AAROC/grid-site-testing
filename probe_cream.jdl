@@ -1,0 +1,27 @@
+[
+	Type = "Job";
+	JobType = "Normal";
+	
+#Command to execute on the worker node
+	Executable = "probe.sh";
+
+#Command line options to parse to the executable
+	Arguments = "";
+
+#Standard output (Whould have been displayed to the screen output)
+	StdOutput = "output";
+
+#Standard errors
+	StdError = "output";
+
+#Files to save after a jobrun (logfiles, outputfiles, etc.)
+	OutputSandbox = {"output"};
+#	OutputSandboxBaseDestURI="gsiftp://glite-ce.grid.uj.ac.za/tmp";
+	OutputSandboxBaseDestURI="gsiftp://srvslngrd007.uct.ac.za/tmp";
+#	OutputSandboxBaseDestURI="gsiftp://grid-ce.chpc.ac.za/tmp";
+	InputSandbox = {"probe.sh"};
+#Times to resubmit job, if first submit fails
+	RetryCount = 0;
+	ShallowRetryCount = 0;
+#	Requirements = other.GlueCEUniqueID=="glite-ce.grid.uj.ac.za:8443/cream-pbs-sagrid";
+]

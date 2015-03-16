@@ -1,0 +1,30 @@
+Type = "Job";
+JobType = "Normal";
+
+#Command to execute on the worker node
+Executable = "probe.sh";
+
+#Command line options to parse to the executable
+Arguments = "100000";
+
+#Standard output (Whould have been displayed to the screen output)
+StdOutput = "output";
+
+#Standard errors
+StdError = "output";
+
+#Files to save after a jobrun (logfiles, outputfiles, etc.)
+OutputSandbox = {"output"};
+#OutputSandboxBaseDestURI="gsiftp://fs01.grid.uj.ac.za/tmp";
+#OutputSandboxBaseDestURI="gsiftp://gridce.saao.ac.za/tmp";
+#OutputSandboxBaseDestURI = "gsiftp://grid-ce.chpc.ac.za:/tmp";
+InputSandbox = {"probe.sh"};
+#PerusalFileEnable  = True;
+#Times to resubmit job, if first submit fails
+RetryCount = 0;
+ShallowRetryCount = 1;
+#Define resources required (Optional)
+#Requirements = other.GlueCEUniqueID=="grid.ufs.ac.za:8443/cream-pbs-sagrid";
+#Requirements = other.GlueCEUniqueID=="srvslngrd004.uct.ac.za:8443/cream-pbs-sagrid";
+#Requirements = other.GlueCEUniqueID=="srvslngrd007.uct.ac.za:8443/cream-pbs-ops";
+#Requirements = other.GlueCEUniqueID=="glite-ce.grid.uj.ac.za:8443/cream-pbs-sagrid";
